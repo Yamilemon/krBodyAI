@@ -1,0 +1,2 @@
+# krBodyAI
+krkr集成ncnn引擎调用movenet模型进行人体识别插件
