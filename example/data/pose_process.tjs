@@ -93,3 +93,120 @@ class rise_down extends mathFunc {
         }
     }
 }
+
+// 跳绳运动轨迹类
+class skip_act extends mathFunc {
+    var current_nose = void;
+    var current_r_eye = void;
+    var current_l_eye = void;
+    var current_r_ear = void;
+    var current_l_ear = void;
+    var current_r_shoulder = void;
+    var current_l_shoulder = void;
+    var current_r_elbow = void;
+    var current_l_elbow = void;
+    var current_r_hand = void;
+    var current_l_hand = void;
+    var current_r_ass = void;
+    var current_l_ass = void;
+    var current_r_knee = void;
+    var current_l_knee = void;
+    var current_r_foot = void;
+    var current_l_foot = void;
+    //========================================================
+    var _isUp = false;
+    var _isDown = false;
+    var count = 0;
+    function skip_act(CartesianSystem){
+        super.mathFunc(...);
+    }
+
+    function onReceive(body_point, act_bean){
+        // 全身的点
+        var nose = body_point[0];
+        var r_eye = body_point[1];
+        var l_eye = body_point[2];
+        var r_ear = body_point[3];
+        var l_ear = body_point[4];
+        var r_shoulder = body_point[5];
+        var l_shoulder = body_point[6];
+        var r_elbow = body_point[7];
+        var l_elbow = body_point[8];
+        var r_hand = body_point[9];
+        var l_hand = body_point[10];
+        var r_ass = body_point[11];
+        var l_ass = body_point[12];
+        var r_knee = body_point[13];
+        var l_knee = body_point[14];
+        var r_foot = body_point[15];
+        var l_foot = body_point[16];
+
+        if(nose.score <= 0.3 || r_eye.score <= 0.3 || l_eye.score <= 0.3 || r_ear.score <= 0.3 || l_ear.score <= 0.3 || r_shoulder.score <= 0.3 
+            || l_shoulder.score <= 0.3 || r_elbow.score <= 0.3 || l_elbow.score <= 0.3 || r_hand.score <= 0.3 || l_hand.score <= 0.3 || r_ass.score <= 0.3
+            || l_ass.score <= 0.3 || r_knee.score <= 0.3 || l_knee.score <= 0.3) return;
+
+        if(current_nose==void) current_nose = nose;
+        if(current_r_eye==void) current_r_eye = r_eye;
+        if(current_l_eye==void) current_l_eye = l_eye;
+        if(current_r_ear==void) current_r_ear = r_ear;
+        if(current_l_ear==void) current_l_ear = l_ear;
+        if(current_r_shoulder==void) current_r_shoulder = r_shoulder;
+        if(current_l_shoulder==void) current_l_shoulder = l_shoulder;
+        if(current_r_elbow==void) current_r_elbow = r_elbow;
+        if(current_l_elbow==void) current_l_elbow = l_elbow;
+        if(current_r_hand==void) current_r_hand = r_hand;
+        if(current_l_hand==void) current_l_hand = l_hand;
+        if(current_r_ass==void) current_r_ass = r_ass;
+        if(current_l_ass==void) current_l_ass = l_ass;
+        if(current_r_knee==void) current_r_knee = r_knee;
+        if(current_l_knee==void) current_l_knee = l_knee;
+        if(current_r_foot==void) current_r_foot = r_foot;
+        if(current_l_foot==void) current_l_foot = l_foot;
+
+        // 算法关键：全身的点都在上升时，判断为跳起来，在这个基础上，如果发生了下降，则判断为完成一次起跳
+        if(current_nose.y - nose.y < 0 && current_r_eye.y - r_eye.y < 0 && current_l_eye.y - l_eye.y < 0 &&
+            current_r_ear.y - r_ear.y < 0 && current_l_ear.y - l_ear.y < 0 && current_r_shoulder.y - r_shoulder.y < 0 &&
+            current_l_shoulder.y - l_shoulder.y < 0 && current_r_elbow.y - r_elbow.y < 0 && current_l_elbow.y - l_elbow.y < 0 &&
+            current_r_hand.y - r_hand.y < 0 && current_l_hand.y - l_hand.y < 0 && current_r_ass.y - r_ass.y < 0 &&
+            current_l_ass.y - l_ass.y < 0 && current_r_knee.y - r_knee.y < 0 && current_l_knee.y - l_knee.y < 0 &&
+            current_r_foot.y - r_foot.y < 0 && current_l_foot.y - l_foot.y < 0 && !this._isDown) {
+                Debug.message("is up！！！");
+                this._isUp = true;
+            }
+
+        // 已经跳起来后下降
+        if(current_nose.y - nose.y > 0 && current_r_eye.y - r_eye.y > 0 && current_l_eye.y - l_eye.y > 0 &&
+            current_r_ear.y - r_ear.y > 0 && current_l_ear.y - l_ear.y > 0 && current_r_shoulder.y - r_shoulder.y > 0 &&
+            current_l_shoulder.y - l_shoulder.y > 0 && current_r_elbow.y - r_elbow.y > 0 && current_l_elbow.y - l_elbow.y > 0 &&
+            current_r_hand.y - r_hand.y > 0 && current_l_hand.y - l_hand.y > 0 && current_r_ass.y - r_ass.y > 0 &&
+            current_l_ass.y - l_ass.y > 0 && current_r_knee.y - r_knee.y > 0 && current_l_knee.y - l_knee.y > 0 &&
+            current_r_foot.y - r_foot.y > 0 && current_l_foot.y - l_foot.y > 0 && this._isUp) {
+                this._isDown = true;
+                Debug.message("finish jump！！！");
+                this.count++;
+                lay.fillRect(0, 0, 500, 500, 0xffffff);
+                lay.drawText(0, 0,  this.count , 0);
+                this._isUp = false;
+                this._isDown = false;
+            }
+
+        current_nose = nose;
+        current_r_eye = r_eye;
+        current_l_eye = l_eye;
+        current_r_ear = r_ear;
+        current_l_ear = l_ear;
+        current_r_shoulder = r_shoulder;
+        current_l_shoulder = l_shoulder;
+        current_r_elbow = r_elbow;
+        current_l_elbow = l_elbow;
+        current_r_hand = r_hand;
+        current_l_hand = l_hand;
+        current_r_ass = r_ass;
+        current_l_ass = l_ass;
+        current_r_knee = r_knee;
+        current_l_knee = l_knee;
+        current_r_foot = r_foot;
+        current_l_foot = l_foot;
+
+    }
+}
