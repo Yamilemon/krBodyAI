@@ -210,3 +210,118 @@ class skip_act extends mathFunc {
 
     }
 }
+
+// 原地跑运动轨迹类
+class run_act extends mathFunc {
+    var current_r_hand = void;
+    var current_l_hand = void;
+    var current_r_knee = void;
+    var current_l_knee = void;
+    var current_r_foot = void;
+    var current_l_foot = void;
+    // 左手
+    var left_hand_up = false;
+    var left_hand_down = false;
+    // 右手
+    var right_hand_up = false;
+    var right_hand_down = false;
+    // 左脚
+    var left_foot_up = false;
+    var left_foot_down = false;
+    // 右脚
+    var right_foot_up = false;
+    var right_foot_down = false;
+    function run_act(CartesianSystem) {
+        super.mathFunc(...);
+    }
+    function onReceive(body_point, act_bean){
+        var r_hand = body_point[9];
+        var l_hand = body_point[10];
+        var r_knee = body_point[13];
+        var l_knee = body_point[14];
+        var r_foot = body_point[15];
+        var l_foot = body_point[16];
+
+        if(r_hand.score <= 0.3 || l_hand.score <= 0.3 || r_knee.score <= 0.3 || l_knee.score <= 0.3 || r_foot.score <= 0.3 || l_foot.score <= 0.3) return;
+
+        if(this.current_r_hand==void) this.current_r_hand = r_hand;
+        if(this.current_l_hand==void) this.current_l_hand = l_hand;
+        if(this.current_r_knee==void) this.current_r_knee = r_knee;
+        if(this.current_l_knee==void) this.current_l_knee = l_knee;
+        if(this.current_r_foot==void) this.current_r_foot = r_foot;
+        if(this.current_l_foot==void) this.current_l_foot = l_foot;
+
+        // 跑步动作这里关键在于不是算次数，而是要判断你他妈的到底在不在跑，所以，核心算法归为：
+        // 双手一直上下摆动，双腿一直上下摆动（膝盖可以先忽略也行）就能算为在跑
+
+        if(this.current_r_hand.y - r_hand.y < 0 /*&& !this.right_hand_down*/){
+            // 右手上去了
+            this.right_hand_up = true;
+            // 同时右手下去为false
+            this.right_hand_down = false;
+        }
+        if(/*this.right_hand_up &&*/ current_r_hand.y - r_hand.y > 0){
+            // 右手下去了
+            this.right_hand_down = true;
+            // 同时右手上去为false
+            this.right_hand_up = false;
+        }
+
+        if(this.current_l_hand.y - l_hand.y < 0 /*&& !this.left_hand_down*/){
+            // 左手上去了
+            this.left_hand_up = true;
+            // 同时左手下去歪false
+            this.left_hand_down = false;
+        }
+        if(/*this.left_hand_up &&*/ current_l_hand.y - l_hand.y > 0){
+            // 左手下去了
+            this.left_hand_down = true;
+            // 同时左手上去为false
+            this.left_hand_up = false;
+        }
+
+        if(this.current_r_foot.y - r_foot.y < 0 /*&& !this.right_foot_down*/){
+            // 右脚上去了
+            this.right_foot_up = true;
+            // 同时左脚下去为false
+            this.right_foot_down = false;
+        }
+        if(/*this.right_foot_up &&*/ current_r_foot.y - r_foot.y > 0){
+            // 右脚下去了
+            this.right_foot_down = true;
+            // 同时左脚上去为false
+            this.right_foot_up = false;
+        }
+
+        if(this.current_l_foot.y - l_foot.y < 0 /*&& !this.left_foot_down*/){
+            // 左脚上去了
+            this.left_foot_up = true;
+            // 同时左脚下去为false
+            this.left_foot_down = false;
+        }
+        if(/*this.left_foot_up &&*/ current_l_foot.y - l_foot.y > 0){
+            // 左脚下去了
+            this.left_foot_down = true;
+            // 同时左脚上去为false
+            this.left_foot_up = false;
+        }
+
+        //Debug.message("帕普露紫的大冒险，开始！！！");
+
+        // 右手下去，左手上去，右脚上去，左脚下去
+        if((this.right_hand_down && this.left_hand_up && this.right_foot_up && this.left_foot_down)||
+        // 右手上去，左手下去，右脚下去，左脚上去
+        (this.right_hand_up && this.left_hand_down && this.right_foot_down && this.left_foot_up)){
+            Debug.message("卡其脱离太！！！");
+            //this.right_hand_down = false;
+            //this.right_hand_up = false;
+        }
+
+        this.current_r_hand = r_hand;
+        this.current_l_hand = l_hand;
+        this.current_r_knee = r_knee;
+        this.current_l_knee = l_knee;
+        this.current_r_foot = r_foot;
+        this.current_l_foot = l_foot;
+    }
+}
